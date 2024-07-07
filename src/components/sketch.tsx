@@ -1,4 +1,3 @@
-import p5 from 'p5';
 import p5Types from 'p5';
 
 let colorInc = 1.5; // Color change speed
@@ -19,36 +18,27 @@ let particles: any[] = [];
 let flowfield: p5Types.Vector[];
 let hu = 0;
 let p = 1;
-let parentStyle: CSSStyleDeclaration;
-let canvasHeight: number;
-let canvasWidth: number;
-let audioState: string;
-let cnv: any;
-let sine: any;
 
-export const sketch: P5jsSketch = (p5, parentRef) => {
+export const sketch: P5jsSketch = (p5) => {
   p5.setup = () => {
-    if (parentRef) {
-      parentStyle = window.getComputedStyle(parentRef);
-      canvasWidth = parseInt(parentStyle.width);
-      canvasHeight = parseInt(parentStyle.width);
-      cnv = p5.createCanvas(canvasWidth, canvasHeight).parent(parentRef);
+    p5.createCanvas(window.innerWidth, window.innerHeight);
 
-      p5.colorMode(p5.HSB, 359, 100, 100, 100);
+    p5.colorMode(p5.HSB, 359, 100, 100, 100);
 
-      cols = Math.floor(p5.width / scl);
-      rows = Math.floor(p5.height / scl);
-      fr = p5.createP('');
+    cols = Math.floor(p5.width / scl);
+    rows = Math.floor(p5.height / scl);
+    fr = p5.createP('');
 
-      flowfield = new Array(cols * rows);
+    flowfield = new Array(cols * rows);
 
-      for (var i = 0; i < numbPart; i++) {
-        particles[i] = new Particle(p5);
-      }
-      p5.background(253);
-
-      setTimeout(p5.stopDrawing, 20000);
+    for (var i = 0; i < numbPart; i++) {
+      particles[i] = new Particle(p5);
     }
+    p5.background(253);
+    setTimeout(() => {
+      console.log(1);
+      p5.stopDrawing();
+    }, 10000);
 
     //   audioState = p5.getAudioContext();
     //   audioState.suspend();
@@ -60,20 +50,19 @@ export const sketch: P5jsSketch = (p5, parentRef) => {
   };
 
   p5.windowResized = () => {
-    if (parentRef) {
-      parentStyle = window.getComputedStyle(parentRef);
-      canvasWidth = parseInt(parentStyle.width);
-      canvasHeight = parseInt(parentStyle.width);
-      p5.resizeCanvas(canvasWidth, canvasHeight);
-      // myCanvas1.parent('myContainer1');
+    p5.resizeCanvas(window.innerWidth, window.innerHeight);
+    // myCanvas1.parent('myContainer1');
 
-      p5.background(253);
-      p = 1;
-      setTimeout(p5.stopDrawing, 10000);
-    }
+    p5.background(253);
+    p = 1;
+    setTimeout(() => {
+      console.log(2);
+      p5.stopDrawing();
+    }, 10000);
   };
 
   p5.stopDrawing = () => {
+    console.log('hey here o');
     p = p * -1;
   };
 
@@ -85,7 +74,7 @@ export const sketch: P5jsSketch = (p5, parentRef) => {
         for (var x = 0; x < cols; x++) {
           var index = x + y * cols;
           var angle = p5.noise(xoff, yoff, zoff) * angMult + angTurn;
-          var v = p5.Vector?.fromAngle(angle);
+          var v = p5.constructor.Vector?.fromAngle(angle);
           v?.setMag(1);
           flowfield[index] = v;
           xoff += inc;

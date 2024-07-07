@@ -23,7 +23,7 @@ const config: Config = {
       colors: {
         gray: colors.trueGray,
         bgBlue: '#02111B',
-        trans: 'rgba(255, 255, 255,0.2)',
+        trans: 'rgba(255, 255, 255,0.3)',
       },
       minWidth: {
         box: '300px',

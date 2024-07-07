@@ -6,9 +6,6 @@ import { sketch } from './sketch';
 import p5Types from 'p5';
 
 export const P5jsContainer = () => {
-  // components/P5jsContainer.tsx
-  const parentRef = useRef<P5jsContainerRef>(null);
-  // ...
   const [isMounted, setIsMounted] = useState<boolean>(false);
 
   // on mount
@@ -30,12 +27,10 @@ export const P5jsContainer = () => {
         const p5 = (await import('p5')).default;
         // await import("p5/lib/addons/p5.sound");
         // initalize the sketch
-        if (parentRef.current !== null) {
-          new p5((p) => {
-            sketch(p, parentRef.current);
-            p5instance = p;
-          });
-        }
+        new p5((p) => {
+          sketch(p);
+          p5instance = p;
+        });
       } catch (error) {
         console.log(error);
       }
@@ -43,16 +38,7 @@ export const P5jsContainer = () => {
 
     initP5();
 
-    // when the component unmounts, remove the p5 instance.
-
     return () => p5instance.remove();
-  }, [isMounted, sketch]);
-  // ....
-
-  // More stuff comes here
-  // ....
-  // ...
-
-  // parent div of the p5 canvas
-  return <div ref={parentRef}></div>;
+  }, [isMounted]);
+  return <div></div>;
 };
