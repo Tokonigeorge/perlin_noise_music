@@ -24,6 +24,8 @@ const config: Config = {
         gray: colors.trueGray,
         bgBlue: '#02111B',
         trans: 'rgba(255, 255, 255,0.3)',
+        blacktrans: 'rgba(0, 0, 0,0.9)',
+        spotifyGrn: '#1DB954',
       },
       minWidth: {
         box: '300px',

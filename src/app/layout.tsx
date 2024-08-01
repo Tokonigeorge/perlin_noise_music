@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import { P5jsContainer } from '@/components/p5jsContainer';
+import Wrapper from './wrapper';
 
 export const metadata: Metadata = {
   title: 'Perlin Spotify Flow',
@@ -15,8 +15,9 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <body className={'box-border overflow-hidden'}>
-        {children}
-        <P5jsContainer />
+        <Wrapper>{children}</Wrapper>
+        {/*       
+        <P5jsContainer /> */}
       </body>
     </html>
   );

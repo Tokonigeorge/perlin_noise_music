@@ -1,107 +1,79 @@
 import p5Types from 'p5';
 
-let colorInc = 1.5; // Color change speed
 let sat = 100; // saturation max 100
 let brt = 100; // brightness max 100
 let alph = 10; // alpha max 100
 let numbPart = 300; // number of particles
 let partStroke = 1; // line width
-let angMult = 25; // 0.1 = straighter lines; 25+ = sharp curves
-let angTurn = 1; // adjust angle for straight lines (after adjusting angMult)
-let zOffInc = 0.00001; // speed of vector changes
-let inc = 0.1;
-let scl = 10;
-let cols: number, rows: number;
-let zoff = 0;
 let fr;
-let particles: any[] = [];
-let flowfield: p5Types.Vector[];
-let hu = 0;
-let p = 1;
 
-export const sketch: P5jsSketch = (p5) => {
+let resizeCount: number;
+
+export const Sketch = (p5: any, p5State: IP5State) => {
   p5.setup = () => {
     p5.createCanvas(window.innerWidth, window.innerHeight);
 
     p5.colorMode(p5.HSB, 359, 100, 100, 100);
 
-    cols = Math.floor(p5.width / scl);
-    rows = Math.floor(p5.height / scl);
+    p5State.cols = Math.floor(p5.width / p5State.scl);
+    p5State.rows = Math.floor(p5.height / p5State.scl);
     fr = p5.createP('');
 
-    flowfield = new Array(cols * rows);
+    p5State.flowfield = new Array(p5State.cols * p5State.rows);
 
     for (var i = 0; i < numbPart; i++) {
-      particles[i] = new Particle(p5);
+      p5State.particles[i] = new Particle(p5);
     }
     p5.background(253);
     setTimeout(() => {
-      console.log(1);
-      p5.stopDrawing();
+      p5.noLoop();
     }, 10000);
-
-    //   audioState = p5.getAudioContext();
-    //   audioState.suspend();
-    //   cnv.mouseClicked(() => {
-    //     audioState.state !== "running" ? audioState.resume() : null;
-    //   });
-    // etc....
-    //   loadAudio();
   };
 
   p5.windowResized = () => {
+    if (resizeCount > 1) return;
+    resizeCount++;
     p5.resizeCanvas(window.innerWidth, window.innerHeight);
     // myCanvas1.parent('myContainer1');
 
     p5.background(253);
-    p = 1;
+    p5State.p = 1;
     setTimeout(() => {
-      console.log(2);
-      p5.stopDrawing();
+      p5.noLoop();
     }, 10000);
   };
 
-  p5.stopDrawing = () => {
-    console.log('hey here o');
-    p = p * -1;
-  };
-
   p5.draw = () => {
-    if (p > 0) {
+    if (p5State.p > 0) {
       var yoff = 0;
-      for (var y = 0; y < rows; y++) {
+      for (var y = 0; y < p5State.rows; y++) {
         var xoff = 0;
-        for (var x = 0; x < cols; x++) {
-          var index = x + y * cols;
-          var angle = p5.noise(xoff, yoff, zoff) * angMult + angTurn;
-          var v = p5.constructor.Vector?.fromAngle(angle);
+        for (var x = 0; x < p5State.cols; x++) {
+          var index = x + y * p5State.cols;
+          var angle =
+            p5.noise(xoff, yoff, p5State.zoff) * p5State.angMult +
+            p5State.angTurn;
+
+          var v = p5.constructor?.Vector?.fromAngle(angle);
           v?.setMag(1);
-          flowfield[index] = v;
-          xoff += inc;
-          // stroke(100, 50);
-          // push();
-          // translate(x * scl, y * scl);
-          // rotate(v.heading());
-          // strokeWeight(1);
-          // line(0, 0, scl, 0);
-          // pop();
+          p5State.flowfield[index] = v;
+          xoff += p5State.inc;
         }
-        yoff += inc;
+        yoff += p5State.inc;
 
-        zoff += zOffInc;
+        p5State.zoff += p5State.zOffInc;
       }
 
-      for (var i = 0; i < particles.length; i++) {
-        particles[i].follow(flowfield);
-        particles[i].update();
-        particles[i].edges();
-        particles[i].show();
+      for (var i = 0; i < p5State.particles.length; i++) {
+        p5State.particles[i].follow(p5State.flowfield);
+        p5State.particles[i].update();
+        p5State.particles[i].edges();
+        p5State.particles[i].show();
       }
 
-      // fr.html(floor(frameRate()));
-      hu += colorInc;
-      if (hu > 359) {
-        hu = 0;
+      p5State.hu += p5State.colorInc;
+      if (p5State.hu > 359) {
+        p5State.hu = 0;
       }
     }
   };
@@ -131,9 +103,9 @@ export const sketch: P5jsSketch = (p5) => {
     }
 
     follow(vectors: p5Types.Vector[]) {
-      var x = Math.floor(this.pos.x / scl);
-      var y = Math.floor(this.pos.y / scl);
-      var index = x + y * cols;
+      var x = Math.floor(this.pos.x / p5State.scl);
+      var y = Math.floor(this.pos.y / p5State.scl);
+      var index = x + y * p5State.cols;
       var force = vectors[index];
       this.applyForce(force);
     }
@@ -143,7 +115,7 @@ export const sketch: P5jsSketch = (p5) => {
     }
 
     show() {
-      this.p.stroke(hu, sat, brt, alph);
+      this.p.stroke(p5State.hu, sat, brt, alph);
       this.p.strokeWeight(partStroke);
       this.p.line(this.pos.x, this.pos.y, this.prevPos.x, this.prevPos.y);
       this.updatePrev();
